@@ -11,7 +11,7 @@ public class Task {
 
     private boolean isComplete;
 
-    public Task(String taskName)
+    Task(String taskName)
     {
         this.predecessors = new ArrayList<Task>();
         this.ancestors = new ArrayList<Task>();
@@ -19,38 +19,33 @@ public class Task {
         this.status = Status.NOT_STARTED;
     }
 
-    public boolean hasPredecessors()
+    private boolean hasPredecessors()
     {
         return !this.predecessors.isEmpty();
     }
 
-    public boolean hasAncestors()
+    private boolean hasAncestors()
     {
         return !this.ancestors.isEmpty();
     }
 
-    public void addPredecessorTask(Task task)
+    void addPredecessorTask(Task task)
     {
         this.predecessors.add(task);
     }
 
-    public void removePredecessorTask(Task task)
+    void addAncestorTask(Task task)
     {
-        this.predecessors.remove(task);
+        this.ancestors.add(task);
     }
 
-    public void execute()
+    void execute()
     {
         if(this.hasAncestors()) {
             this.status = Status.BLOCKED;
         }else{
             this.status = Status.INFLIGHT;
         }
-    }
-
-    public String getName()
-    {
-        return this.name;
     }
 
 
@@ -63,25 +58,13 @@ public class Task {
     {
 
         //remove any completed ancestor tasks
-        ListIterator ali = this.ancestors.listIterator();
-        while(ali.hasNext())
-        {
-            Task currentTask = (Task)ali.next();
-            if(currentTask.isComplete())
-                this.ancestors.remove(currentTask);
-        }
+        removeCompletedTasks(this.ancestors);
 
-        //remove any completed predecessor tasks
-        ListIterator pli = this.predecessors.listIterator();
-        while(ali.hasNext())
-        {
-            Task currentTask = (Task)ali.next();
-            if(currentTask.isComplete())
-                this.predecessors.remove(currentTask);
-        }
+        //remove any completed ancestor tasks
+        removeCompletedTasks(this.predecessors);
 
         if(this.hasAncestors()) {
-            this.status = Status.INFLIGHT;
+            this.status = Status.BLOCKED;
         }
         else if(this.hasPredecessors())
         {
@@ -93,6 +76,20 @@ public class Task {
         }
 
 
+    }
+
+    public void removeCompletedTasks(ArrayList<Task> tasks)
+    {
+        //remove any completed  tasks
+        ListIterator pli = tasks.listIterator();
+        ArrayList<Task> tasksToRemove = new ArrayList<Task>();
+        while(pli.hasNext())
+        {
+            Task currentTask = (Task)pli.next();
+            if(currentTask.isComplete())
+                tasksToRemove.add(currentTask);
+        }
+        tasks.removeAll(tasksToRemove);
     }
 
     public Status getStatus() {

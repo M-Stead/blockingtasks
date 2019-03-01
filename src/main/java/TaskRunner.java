@@ -12,7 +12,7 @@ public class TaskRunner {
 
     }
 
-    public void runTasks()
+    public void run()
     {
 
     }
